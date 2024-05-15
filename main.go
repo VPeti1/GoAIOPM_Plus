@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
@@ -122,6 +123,58 @@ func runCommand(command string, args ...string) {
 	}
 }
 
+func clear() {
+	cmd := exec.Command("clear")
+	cmd.Stdout = os.Stdout
+	cmd.Run()
+}
+
+func getInput(prompt string) string {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print(prompt)
+	input, _ := reader.ReadString('\n')
+	return strings.TrimSpace(input)
+}
+
+func fst() {
+	clear()
+	fmt.Println("Welcome to AIOPM Setup!")
+	fmt.Println("What distro are you using?")
+	fmt.Println("(arch,debian,fedora,opensuse or void)")
+	fmt.Println("(Derivatives included)")
+	fmt.Print("> ")
+	input := getInput("")
+	switch input {
+	case "arch", "Arch":
+		fmt.Println("Setting configuration for Arch")
+		exec.Command("sudo", "mkdir", "/etc/aiopm").Run()
+		exec.Command("sudo", "touch", "/etc/aiopm/a1.cw").Run()
+	case "debian", "Debian":
+		fmt.Println("Setting configuration for Debian")
+		exec.Command("sudo", "mkdir", "/etc/aiopm").Run()
+		exec.Command("sudo", "touch", "/etc/aiopm/a2.cw").Run()
+	case "fedora", "Fedora":
+		fmt.Println("Setting configuration for Fedora")
+		exec.Command("sudo", "mkdir", "/etc/aiopm").Run()
+		exec.Command("sudo", "touch", "/etc/aiopm/a3.cw").Run()
+	case "opensuse", "Opensuse":
+		exec.Command("sudo", "mkdir", "/etc/aiopm").Run()
+		exec.Command("sudo", "touch", "/etc/aiopm/a4.cw").Run()
+	case "void", "Void":
+		exec.Command("sudo", "mkdir", "/etc/aiopm").Run()
+		exec.Command("sudo", "touch", "/etc/aiopm/a5.cw").Run()
+	default:
+		fmt.Println("Invalid input! Retrying")
+		systemPause()
+		fst()
+	}
+}
+
+func systemPause() {
+	fmt.Println("Press Enter to continue...")
+	bufio.NewReader(os.Stdin).ReadBytes('\n')
+}
+
 func main() {
 	// Splash screen
 	fmt.Println(` $$$$$$\  $$$$$$\  $$$$$$\  $$$$$$$\  $$\      $$\ 
@@ -221,18 +274,18 @@ By VPeti`)
 			handleSys(action, "")
 		} else if len(os.Args) >= 4 {
 			pkg := os.Args[3]
-			if fileExists("/usr/aiopm/a1.cw") {
+			if fileExists("/etc/aiopm/a1.cw") {
 				handlePkgManager("sys", action, pkg)
-			} else if fileExists("/usr/aiopm/a2.cw") {
+			} else if fileExists("/etc/aiopm/a2.cw") {
 				handlePkgManager("debian", action, pkg)
-			} else if fileExists("/usr/aiopm/a3.cw") {
+			} else if fileExists("/etc/aiopm/a3.cw") {
 				handlePkgManager("fedora", action, pkg)
-			} else if fileExists("/usr/aiopm/a4.cw") {
+			} else if fileExists("/etc/aiopm/a4.cw") {
 				handlePkgManager("opensuse", action, pkg)
-			} else if fileExists("/usr/aiopm/a5.cw") {
+			} else if fileExists("/etc/aiopm/a5.cw") {
 				handlePkgManager("void", action, pkg)
 			} else {
-				fmt.Println("No supported pkg manager found!")
+				fst()
 			}
 		} else {
 			fmt.Fprintln(os.Stderr, "Invalid action or insufficient arguments for sys!")
